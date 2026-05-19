@@ -4,6 +4,7 @@ import json
 import os
 import re
 from pathlib import Path
+from typing import Any
 
 
 PLACEHOLDER_PATTERN = re.compile(r"\$\{([^}]+)\}")
@@ -25,17 +26,17 @@ def expand_placeholders(value: str | None, context: dict[str, str]) -> str | Non
 
 
 class ActionRunner:
-    def __init__(self, page, output_dir: str | Path | None = None):
+    def __init__(self, page: Any, output_dir: str | Path | None = None):
         self.page = page
         self.output_dir = Path(output_dir) if output_dir else None
 
-    def run(self, actions: list[dict]) -> dict[str, str]:
+    def run(self, actions: list[dict[str, Any]]) -> dict[str, str]:
         context: dict[str, str] = {}
         for action in actions:
             self.run_action(action, context)
         return context
 
-    def run_action(self, action: dict, context: dict[str, str]) -> None:
+    def run_action(self, action: dict[str, Any], context: dict[str, str]) -> None:
         action_type = action["type"]
 
         if action_type == "goto":
@@ -87,7 +88,9 @@ class ActionRunner:
             raise ValueError(f"Unsupported action type '{action_type}'.")
 
 
-def run_automation(config: dict, output_dir: str | Path | None = None, *, headed_override: bool | None = None) -> dict[str, str]:
+def run_automation(
+    config: dict[str, Any], output_dir: str | Path | None = None, *, headed_override: bool | None = None
+) -> dict[str, str]:
     from playwright.sync_api import sync_playwright
 
     headless = config.get("headless", True)
