@@ -9,7 +9,7 @@ from pathlib import Path
 PLACEHOLDER_PATTERN = re.compile(r"\$\{([^}]+)\}")
 
 
-def expand_placeholders(value: str | None, context: dict[str, str]):
+def expand_placeholders(value: str | None, context: dict[str, str]) -> str | None:
     if not isinstance(value, str):
         return value
 
