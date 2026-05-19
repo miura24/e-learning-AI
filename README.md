@@ -44,6 +44,24 @@ e-learning-ai config.json --headed --output-dir outputs
 - `assert_text`: 期待する文言が表示されていることを確認する
 - `screenshot`: 実行結果のスクリーンショットを保存する
 
+### ロケータ指定
+
+`click` / `fill` / `extract_text` などの要素操作は、以下のいずれかで対象を指定できます。
+
+- `selector`: CSS セレクタで指定
+- `text`: 画面に表示される文字列で指定
+
+同じ文言が複数ある場合は `nth` (0 始まり) で対象を選べます。  
+`text` を厳密一致にしたい場合は `exact: true` を指定します。
+
+```json
+{
+  "type": "click",
+  "text": "学習する",
+  "nth": 0
+}
+```
+
 ## 変数展開
 
 `value` や `url` などの文字列では `${...}` 形式の変数展開を使えます。

@@ -30,6 +30,20 @@ class ActionRunner:
         self.page = page
         self.output_dir = Path(output_dir) if output_dir else None
 
+    def resolve_locator(self, action: dict[str, Any], context: dict[str, str]):
+        selector = action.get("selector")
+        if selector:
+            selector = expand_placeholders(selector, context)
+            locator = self.page.locator(selector)
+        else:
+            text = expand_placeholders(action.get("text"), context)
+            locator = self.page.get_by_text(text, exact=action.get("exact", False))
+
+        nth = action.get("nth")
+        if nth is not None:
+            locator = locator.nth(nth)
+        return locator
+
     def run(self, actions: list[dict[str, Any]]) -> dict[str, str]:
         context: dict[str, str] = {}
         for action in actions:
@@ -44,9 +58,9 @@ class ActionRunner:
             return
 
         if action_type == "wait_for":
-            selector = action.get("selector")
-            if selector:
-                self.page.locator(expand_placeholders(selector, context)).wait_for(
+            if "selector" in action or "text" in action:
+                locator = self.resolve_locator(action, context)
+                locator.wait_for(
                     state=action.get("state", "visible"),
                     timeout=action.get("timeout_ms", 30_000),
                 )
@@ -62,8 +76,7 @@ class ActionRunner:
             self.page.screenshot(path=str(path), full_page=action.get("full_page", True))
             return
 
-        selector = expand_placeholders(action["selector"], context)
-        locator = self.page.locator(selector)
+        locator = self.resolve_locator(action, context)
 
         if action_type == "click":
             locator.click()

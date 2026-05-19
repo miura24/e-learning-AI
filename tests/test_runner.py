@@ -29,6 +29,10 @@ class FakeLocator:
     def uncheck(self) -> None:
         self.page.operations.append(("uncheck", self.selector))
 
+    def nth(self, index: int):
+        self.page.operations.append(("nth", self.selector, index))
+        return self
+
     def wait_for(self, state: str, timeout: int) -> None:
         self.page.operations.append(("wait_for", self.selector, state, timeout))
 
@@ -52,6 +56,10 @@ class FakePage:
 
     def locator(self, selector: str) -> FakeLocator:
         return FakeLocator(self, selector)
+
+    def get_by_text(self, text: str, exact: bool = False) -> FakeLocator:
+        self.operations.append(("get_by_text", text, exact))
+        return FakeLocator(self, f"text={text}")
 
 
 class ActionRunnerTests(unittest.TestCase):
@@ -88,3 +96,13 @@ class ActionRunnerTests(unittest.TestCase):
         runner.run([{"type": "wait_for", "duration_ms": 250}])
 
         self.assertEqual([("wait_for_timeout", 250)], page.operations)
+
+    def test_text_locator_supports_nth(self) -> None:
+        page = FakePage()
+        runner = ActionRunner(page)
+
+        runner.run([{"type": "click", "text": "学習する", "nth": 1}])
+
+        self.assertIn(("get_by_text", "学習する", False), page.operations)
+        self.assertIn(("nth", "text=学習する", 1), page.operations)
+        self.assertIn(("click", "text=学習する"), page.operations)

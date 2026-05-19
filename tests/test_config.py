@@ -35,3 +35,16 @@ class LoadConfigTests(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "missing required fields: value"):
             load_config(path)
+
+    def test_rejects_locator_actions_without_selector_or_text(self) -> None:
+        path = self.write_config({"actions": [{"type": "click"}]})
+
+        with self.assertRaisesRegex(ValueError, "requires 'selector' or 'text'"):
+            load_config(path)
+
+    def test_allows_text_locator(self) -> None:
+        path = self.write_config({"actions": [{"type": "click", "text": "学習する"}]})
+
+        config = load_config(path)
+
+        self.assertEqual("学習する", config["actions"][0]["text"])

@@ -32,7 +32,8 @@
     },
     {
       "type": "click",
-      "selector": ".assignment-card"
+      "text": "学習する",
+      "nth": 0
     },
     {
       "type": "fill",
