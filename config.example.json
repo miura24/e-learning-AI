@@ -1,0 +1,57 @@
+{
+  "headless": true,
+  "slow_mo_ms": 200,
+  "actions": [
+    {
+      "type": "goto",
+      "url": "https://example.com/e-learning/login"
+    },
+    {
+      "type": "fill",
+      "selector": "input[name='userId']",
+      "value": "${E_LEARNING_USERNAME}"
+    },
+    {
+      "type": "fill",
+      "selector": "input[name='password']",
+      "value": "${E_LEARNING_PASSWORD}"
+    },
+    {
+      "type": "click",
+      "selector": "button[type='submit']"
+    },
+    {
+      "type": "wait_for",
+      "selector": ".assignment-card",
+      "state": "visible"
+    },
+    {
+      "type": "extract_text",
+      "selector": ".assignment-card .title",
+      "name": "assignment_title"
+    },
+    {
+      "type": "click",
+      "text": "学習する",
+      "nth": 0
+    },
+    {
+      "type": "fill",
+      "selector": "textarea.answer",
+      "value": "The topic is ${assignment_title}."
+    },
+    {
+      "type": "click",
+      "selector": "button.submit-answer"
+    },
+    {
+      "type": "assert_text",
+      "selector": "body",
+      "value": "提出"
+    },
+    {
+      "type": "screenshot",
+      "path": "submission-result.png"
+    }
+  ]
+}
