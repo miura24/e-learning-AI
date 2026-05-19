@@ -57,7 +57,7 @@ class FakePage:
 class ActionRunnerTests(unittest.TestCase):
     def test_expand_placeholders_uses_context_before_environment(self) -> None:
         os.environ["E_LEARNING_USERNAME"] = "env-user"
-        self.addCleanup(os.environ.pop, "E_LEARNING_USERNAME", None)
+        self.addCleanup(lambda: os.environ.pop("E_LEARNING_USERNAME", None))
 
         result = expand_placeholders("${E_LEARNING_USERNAME}", {"E_LEARNING_USERNAME": "context-user"})
 
